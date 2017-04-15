@@ -24,7 +24,6 @@ $(function(){
   function deleteItems(currentItems, listedItem){
     var item = listedItem.closest('li').find('.js-shopping-item').text();
     delete currentItems[item];
-    console.log(currentItems);
   }
   /* ******--- RENDER FUNCTIONS ---****** */
   function renderList(currentItems, list){
@@ -43,7 +42,8 @@ $(function(){
      $('.js-entry').val("");
    }
 
-  /* ******--- CLICK EVENTS ---****** */ $('.js-shopping-form').submit(function(e){                     e.preventDefault();
+  /* ******--- CLICK EVENTS ---****** */ $('.js-shopping-form').submit(function(e){
+    e.preventDefault();
     addItem(currentItems, $('.js-entry').val());
     renderList(currentItems, $('.js-shopping-list'));
     clearInputField();
