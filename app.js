@@ -1,72 +1,62 @@
 $(function(){
-/* ******---DATA ---****** */
-  var currentItems = {
-    items:[]
-  };
+  /* ******---DATA ---****** */
+  var currentItems = {};
 
-  var listItems = "";
-  var bool = true;
+  /* ******---STATE FUNCTIONS ---****** */
+  function addItem(currentItems, item){
+    if (!currentItems.hasOwnProperty(item)) {
+      currentItems[item] = false;
+    } else {
+      alert('You already have \"' + item + '\" on the list!');
+    }
+  }
 
-/* ******---STATE FUNCTIONS ---****** */
-function addItem(currentItems, item){
-  currentItems.items.push(item);
-}
+  function checkItems(currentItems, listedItem){
+    var item = listedItem.closest('li').find('.js-shopping-item').text();
+    if (currentItems[item] === false) {
+      currentItems[item] = true;
+    } else {
+      currentItems[item] = false;
+    }
 
-function deleteItems(currentItems, item){
+  }
 
-}
-
-/* ******--- RENDER FUNCTIONS ---****** */
-function renderList(currentItems, list){
-  if (bool === true) {
-    bool = false;
-    listItems = currentItems.items.map(function(item){
-    return `<li>
-      <span class="shopping-item js-shopping-item">`+ item + `</span>
-      <div class="shopping-item-controls">
-        <button class="shopping-item-toggle js-checker">
-          <span class="button-label">check</span>
-        </button>
-        <button class="shopping-item-delete js-delete">
-          <span class="button-label">delete</span>
-        </button>
-      </div>
-    </li>`;
+  function deleteItems(currentItems, listedItem){
+    var item = listedItem.closest('li').find('.js-shopping-item').text();
+    delete currentItems[item];
+    console.log(currentItems);
+  }
+  /* ******--- RENDER FUNCTIONS ---****** */
+  function renderList(currentItems, list){
+    var listItems = ""
+     Object.keys(currentItems).forEach(function(item){
+      if(currentItems[item] === true){
+        listItems += `<li> <span class="shopping-item js-shopping-item shopping-item__checked">`+ item + `</span> <div class="shopping-item-controls"> <button class="shopping-item-toggle js-checker"> <span class="button-label">check</span> </button> <button class="shopping-item-delete js-delete"> <span class="button-label">delete</span> </button> </div> </li>`;
+      } else {
+        listItems += `<li> <span class="shopping-item js-shopping-item">`+ item + `</span> <div class="shopping-item-controls"> <button class="shopping-item-toggle js-checker"> <span class="button-label">check</span> </button> <button class="shopping-item-delete js-delete"> <span class="button-label">delete</span> </button> </div> </li>`;
+      }
     });
-  }
-  else {
-    listItems = list.html() + `<li>
-      <span class="shopping-item js-shopping-item">` + $('.js-entry').val() + `</span>
-      <div class="shopping-item-controls">
-        <button class="shopping-item-toggle js-checker">
-          <span class="button-label">check</span>
-        </button>
-        <button class="shopping-item-delete js-delete">
-          <span class="button-label">delete</span>
-        </button>
-      </div>
-    </li>`;
-  }
-  list.html(listItems);
-}
+    list.html(listItems);
+   }
 
-function checker(item){
-  return item.closest('li').find('.js-shopping-item').toggleClass('shopping-item__checked');
-}
+   function clearInputField(){
+     $('.js-entry').val("");
+   }
 
-/* ******--- CLICK EVENTS ---****** */
-  $('.js-shopping-form').submit(function(e){
-    e.preventDefault();
+  /* ******--- CLICK EVENTS ---****** */ $('.js-shopping-form').submit(function(e){                     e.preventDefault();
     addItem(currentItems, $('.js-entry').val());
+    renderList(currentItems, $('.js-shopping-list'));
+    clearInputField();
+  });
+
+  $('ul').on('click','.js-checker',function(){
+    checkItems(currentItems, $(this));
     renderList(currentItems, $('.js-shopping-list'));
   });
 
-  $('ul').on('click','.js-checker', function(){
-    checker($(this));
-  });
-
   $('ul').on('click','.js-delete', function(){
-    $(this).closest('li').remove();
-
+    deleteItems(currentItems, $(this));
+    renderList(currentItems, $('.js-shopping-list'));
   });
+
 });
